@@ -41,6 +41,7 @@ Blockage blockages[BLOCKAGE_AMOUNT];
 
 bool dead = false;
 int score = 0;
+int bestScore = 0;
 
 double lastEarthquakeTime = 0.0;
 
@@ -138,6 +139,10 @@ void drawPlayer() {
 }
 
 void restartGame() {
+    if (score > bestScore) {
+        bestScore = score;
+    }
+
     camera.rotation = 7.5f;
 
     for (int i = 0; i < BLOCKAGE_AMOUNT; i++) {
@@ -207,6 +212,7 @@ void drawGame() {
     drawPlayer();
 
     DrawText(TextFormat("score: %d", score), 64, 64, 32, accent);
+    DrawText(TextFormat("best: %d", bestScore), 64, 96, 32, accent);
 
     if (dead) {
         drawTextCentered("you died", 48, GetScreenHeight() / 2 - 24);
