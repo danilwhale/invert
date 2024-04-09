@@ -55,10 +55,11 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: install libxrandr
-      if: ${{ matrix.os }} == "ubuntu-latest"
       shell: bash
       run: |
-        sudo apt-get install xorg-dev libglu1-mesa-dev
+        if (NOT "${{ runner.os }}" STREQUAL "Windows")
+          sudo apt-get install xorg-dev libglu1-mesa-dev
+        endif()
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
