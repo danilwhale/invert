@@ -55,6 +55,7 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: install libxrandr
+      if: ${{ matrix.os }} == "ubuntu-latest"
       shell: bash
       run: |
         sudo apt-get install xorg-dev libglu1-mesa-dev
