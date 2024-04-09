@@ -21,15 +21,21 @@ void updatePlayer();
 
 void drawPlayer();
 
+void restartGame();
+
 void updateGame();
 
 void drawGame();
 
+void drawTextCentered(const char *text, int fontSize, int y);
+
+bool isAnyKeyPressed();
+
 Camera2D camera = {0};
 
 bool isInverted = false;
-Color accent = BLACK;
-Color target = BLACK;
+Color accent;
+Color target;
 
 Blockage blockages[BLOCKAGE_AMOUNT];
 
@@ -42,7 +48,6 @@ int main() {
     InitWindow(800, 600, "invert");
     SetTargetFPS(60);
 
-    camera.rotation = 7.5f;
     camera.offset = (Vector2) {
             (float) GetScreenWidth() / 2,
             (float) GetScreenHeight() / 2
@@ -53,12 +58,13 @@ int main() {
     };
     camera.zoom = 1.0f;
 
-    for (int i = 0; i < BLOCKAGE_AMOUNT; i++) {
-        createNewBlockage(i);
-    }
+    restartGame();
 
     while (!WindowShouldClose()) {
         if (!dead) updateGame();
+        else if (isAnyKeyPressed()) {
+            restartGame();
+        }
 
         BeginDrawing();
 
@@ -131,6 +137,21 @@ void drawPlayer() {
             accent);
 }
 
+void restartGame() {
+    camera.rotation = 7.5f;
+
+    for (int i = 0; i < BLOCKAGE_AMOUNT; i++) {
+        createNewBlockage(i);
+    }
+
+    isInverted = false;
+    target = BLACK;
+    accent = BLACK;
+
+    dead = false;
+    score = 0;
+}
+
 void updateGame() {
     camera.rotation = Lerp(camera.rotation, 7.5f, 0.25f);
     accent = lerpColor(accent, target, 0.2f);
@@ -188,9 +209,24 @@ void drawGame() {
     DrawText(TextFormat("score: %d", score), 64, 64, 32, accent);
 
     if (dead) {
-        int width = MeasureText("you died", 48);
-        DrawText("you died", GetScreenWidth() / 2 - width / 2, GetScreenHeight() / 2 - 48 / 2, 48, accent);
+        drawTextCentered("you died", 48, GetScreenHeight() / 2 - 24);
+        drawTextCentered("press any key to restart", 24, GetScreenHeight() - 18 - 48);
     }
 
     EndMode2D();
+}
+
+void drawTextCentered(const char *text, int fontSize, int y) {
+    int width = MeasureText(text, fontSize);
+    DrawText(text, GetScreenWidth() / 2 - width / 2, y, fontSize, accent);
+}
+
+bool isAnyKeyPressed() {
+    for (int i = KEY_BACK; i < KEY_KB_MENU; i++) {
+        if (IsKeyPressed(i)) {
+            return true;
+        }
+    }
+
+    return false;
 }
